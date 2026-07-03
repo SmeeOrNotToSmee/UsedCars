@@ -7,7 +7,7 @@
 <style>
   body {
     font-family: Arial, sans-serif;
-    max-width: 800px;
+    max-width: 1000px;
     margin: 0 auto;
     padding: 20px;
     background: #f5f5f0;
@@ -39,34 +39,84 @@
     margin-top: 40px;
   }
 
-  .car {
+  .car-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+  }
+
+  .car-card {
     background: white;
     border: 1px solid #ddd;
-    border-radius: 6px;
-    padding: 16px;
-    margin-bottom: 16px;
+    border-radius: 8px;
+    overflow: hidden;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+  }
+
+  .car-card .car-image {
+    width: 100%;
+    height: 170px;
+    object-fit: cover;
+    background: #ddd;
+    display: block;
+  }
+
+  .car-card .car-image.placeholder {
+    display: flex;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
+    justify-content: center;
+    color: #999;
+    font-size: 0.85rem;
   }
 
-  .car-info h3 {
-    margin: 0 0 4px 0;
+  .car-card .car-body {
+    padding: 14px 16px 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
   }
 
-  .car-info p {
-    margin: 0;
-    color: #555;
-    font-size: 0.9rem;
+  .car-card h3 {
+    margin: 0 0 6px 0;
+    font-size: 1.1rem;
+  }
+
+  .badge {
+    display: inline-block;
+    background: #eee;
+    color: #444;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    width: fit-content;
   }
 
   .price {
     font-size: 1.4rem;
     font-weight: bold;
     color: #b4502c;
-    white-space: nowrap;
+    margin: 4px 0 10px 0;
+  }
+
+  .upgrades {
+    font-size: 0.85rem;
+    color: #555;
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px dashed #ddd;
+  }
+
+  .upgrades strong {
+    display: block;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #888;
+    margin-bottom: 4px;
   }
 
   .contact {
@@ -99,7 +149,7 @@
 </header>
 
 <h2>Cars For Sale</h2>
-<div id="car-list">
+<div id="car-list" class="car-grid">
   <p class="loading-msg">Loading inventory...</p>
 </div>
 
@@ -144,25 +194,47 @@
       return;
     }
 
-    listEl.innerHTML = Object.values(data).map(car => `
-      <div class="car">
-        <div class="car-info">
-          <h3>${escapeHtml(car.name || "")}</h3>
-          <p>${escapeHtml(car.mileage || "")} &middot; ${escapeHtml(car.condition || "")}</p>
-        </div>
-        <div class="price">${escapeHtml(car.price || "")}</div>
-      </div>
-    `).join("");
+    listEl.innerHTML = Object.values(data).map(car => buildCardHtml(car)).join("");
   }, (error) => {
     listEl.innerHTML = '<p class="empty-msg">Could not load inventory. Check the Firebase config.</p>';
     console.error(error);
   });
+
+  function buildCardHtml(car) {
+    const imageHtml = car.image
+      ? `<img class="car-image" src="${escapeHtml(car.image)}" alt="${escapeHtml(car.name || 'Car photo')}" onerror="this.outerHTML='<div class=&quot;car-image placeholder&quot;>No image</div>'">`
+      : `<div class="car-image placeholder">No image</div>`;
+
+    const upgradesList = (car.upgrades || "")
+      .split("\n")
+      .map(u => u.trim())
+      .filter(Boolean);
+
+    const upgradesHtml = upgradesList.length
+      ? `<div class="upgrades"><strong>Upgrades</strong>${upgradesList.map(u => escapeHtml(u)).join(", ")}</div>`
+      : "";
+
+    return `
+      <div class="car-card">
+        ${imageHtml}
+        <div class="car-body">
+          <h3>${escapeHtml(car.name || "")}</h3>
+          ${car.condition ? `<span class="badge">${escapeHtml(car.condition)}</span>` : ""}
+          <div class="price">${escapeHtml(car.price || "")}</div>
+          ${upgradesHtml}
+        </div>
+      </div>
+    `;
+  }
 
   function escapeHtml(str) {
     const div = document.createElement("div");
     div.textContent = str;
     return div.innerHTML;
   }
+
+  // exposed for potential reuse
+  window.buildCardHtml = buildCardHtml;
 </script>
 
 </body>
