@@ -124,6 +124,59 @@
     margin-top: -2px;
   }
 
+  .dollar-input {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .dollar-input span {
+    background: #eee;
+    padding: 8px 10px;
+    color: #555;
+    font-weight: bold;
+  }
+  .dollar-input input {
+    border: none;
+    flex: 1;
+    padding: 8px;
+    font-size: 0.95rem;
+  }
+
+  .suggested-price-box {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #2b3a2c;
+    color: #fff;
+    padding: 12px 16px;
+    border-radius: 6px;
+  }
+  .suggested-price-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #cfc9b0;
+  }
+  .suggested-price-amount {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #ffd27a;
+    flex: 1;
+  }
+  .btn-use-price {
+    background: #b4502c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 7px 14px;
+    font-size: 0.78rem;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
   button {
     cursor: pointer;
     border: none;
@@ -300,10 +353,21 @@
       <label>Image URL
         <input type="text" id="car-image" placeholder="https://..." oninput="updatePreview()" />
       </label>
+      <label>Car Value As New
+        <div class="dollar-input">
+          <span>$</span>
+          <input type="number" id="car-valueNew" placeholder="0" min="0" oninput="updateSuggestedPrice()" />
+        </div>
+      </label>
+      <div class="suggested-price-box">
+        <span class="suggested-price-label">Suggested Price</span>
+        <span class="suggested-price-amount" id="suggested-price-amount">$0</span>
+        <button type="button" class="btn-use-price" onclick="useSuggestedPrice()">Use This</button>
+      </div>
       <div class="hint form-full">Paste a link to an image (e.g. upload to imgur.com and paste the link here).</div>
 
       <label>Engine Tune
-        <select id="car-engineTune" onchange="updatePreview()">
+        <select id="car-engineTune" onchange="updatePreview(); updateSuggestedPrice()">
           <option>Stock</option>
           <option>EMS 2</option>
           <option>EMS 3</option>
@@ -312,7 +376,7 @@
         </select>
       </label>
       <label>Transmission
-        <select id="car-transmission" onchange="updatePreview()">
+        <select id="car-transmission" onchange="updatePreview(); updateSuggestedPrice()">
           <option>Stock</option>
           <option>Street</option>
           <option>Sports</option>
@@ -320,13 +384,13 @@
         </select>
       </label>
       <label>Turbo
-        <select id="car-turbo" onchange="updatePreview()">
+        <select id="car-turbo" onchange="updatePreview(); updateSuggestedPrice()">
           <option>No</option>
           <option>Yes</option>
         </select>
       </label>
       <label>Suspension
-        <select id="car-suspension" onchange="updatePreview()">
+        <select id="car-suspension" onchange="updatePreview(); updateSuggestedPrice()">
           <option>Stock</option>
           <option>Lowered</option>
           <option>Street</option>
@@ -335,7 +399,7 @@
         </select>
       </label>
       <label>Brakes
-        <select id="car-brakes" onchange="updatePreview()">
+        <select id="car-brakes" onchange="updatePreview(); updateSuggestedPrice()">
           <option>Stock</option>
           <option>Street</option>
           <option>Sport</option>
@@ -343,7 +407,7 @@
         </select>
       </label>
       <label>Window Tint
-        <select id="car-tint" onchange="updatePreview()">
+        <select id="car-tint" onchange="updatePreview(); updateSuggestedPrice()">
           <option>None</option>
           <option>Pure Black</option>
           <option>Darksmoke</option>
@@ -353,7 +417,7 @@
         </select>
       </label>
       <label>Armor
-        <select id="car-armor" onchange="updatePreview()">
+        <select id="car-armor" onchange="updatePreview(); updateSuggestedPrice()">
           <option>Stock</option>
           <option>20%</option>
           <option>40%</option>
@@ -366,11 +430,11 @@
       <div class="form-full">
         <label style="margin-bottom:6px;">System (check any that apply)</label>
         <div class="checkbox-group">
-          <label class="checkbox-item"><input type="checkbox" class="system-check" value="Alert System" onchange="updatePreview()"> Alert System</label>
-          <label class="checkbox-item"><input type="checkbox" class="system-check" value="Heated Seat" onchange="updatePreview()"> Heated Seat</label>
-          <label class="checkbox-item"><input type="checkbox" class="system-check" value="Rainbow Neon" onchange="updatePreview()"> Rainbow Neon</label>
-          <label class="checkbox-item"><input type="checkbox" class="system-check" value="Security Locks" onchange="updatePreview()"> Security Locks</label>
-          <label class="checkbox-item"><input type="checkbox" class="system-check" value="Dash Cam" onchange="updatePreview()"> Dash Cam</label>
+          <label class="checkbox-item"><input type="checkbox" class="system-check" value="Alert System" onchange="updatePreview(); updateSuggestedPrice()"> Alert System</label>
+          <label class="checkbox-item"><input type="checkbox" class="system-check" value="Heated Seat" onchange="updatePreview(); updateSuggestedPrice()"> Heated Seat</label>
+          <label class="checkbox-item"><input type="checkbox" class="system-check" value="Rainbow Neon" onchange="updatePreview(); updateSuggestedPrice()"> Rainbow Neon</label>
+          <label class="checkbox-item"><input type="checkbox" class="system-check" value="Security Locks" onchange="updatePreview(); updateSuggestedPrice()"> Security Locks</label>
+          <label class="checkbox-item"><input type="checkbox" class="system-check" value="Dash Cam" onchange="updatePreview(); updateSuggestedPrice()"> Dash Cam</label>
         </div>
       </div>
 
@@ -426,6 +490,61 @@
 
   let editingKey = null;
 
+  // Full prices for each upgrade (used to calculate suggested listing price).
+  const UPGRADE_PRICES = {
+    engineTune: { "EMS 2": 2500, "EMS 3": 3500, "EMS 4": 5000, "EMS 5 (Midnight)": 12000 },
+    transmission: { "Street": 1000, "Sports": 1250, "Race": 1500 },
+    turbo: { "Yes": 6000 },
+    suspension: { "Lowered": 1000, "Street": 2000, "Sport": 3500, "Competition": 4000 },
+    brakes: { "Street": 2000, "Sports": 3000, "Race": 4000 },
+    tint: { "Pure Black": 300, "Darksmoke": 300, "Lightsmoke": 300, "Limo": 250, "Green": 250 },
+    armor: { "20%": 1000, "40%": 3000, "60%": 4000, "80%": 5000, "100%": 7500 },
+    system: { "Alert System": 4000, "Heated Seat": 2500, "Rainbow Neon": 6500, "Security Locks": 5500, "Dash Cam": 1200 },
+  };
+
+  function calculateUpgradeTotal(values) {
+    let total = 0;
+    total += UPGRADE_PRICES.engineTune[values.engineTune] || 0;
+    total += UPGRADE_PRICES.transmission[values.transmission] || 0;
+    total += UPGRADE_PRICES.turbo[values.turbo] || 0;
+    total += UPGRADE_PRICES.suspension[values.suspension] || 0;
+    total += UPGRADE_PRICES.brakes[values.brakes] || 0;
+    total += UPGRADE_PRICES.tint[values.tint] || 0;
+    total += UPGRADE_PRICES.armor[values.armor] || 0;
+    (values.system || []).forEach(sys => {
+      total += UPGRADE_PRICES.system[sys] || 0;
+    });
+    return total;
+  }
+
+  let currentSuggestedPrice = 0;
+
+  window.updateSuggestedPrice = function () {
+    const carValueNew = parseFloat(document.getElementById("car-valueNew").value) || 0;
+    const checkedSystems = Array.from(document.querySelectorAll(".system-check:checked")).map(el => el.value);
+    const upgradeTotal = calculateUpgradeTotal({
+      engineTune: document.getElementById("car-engineTune").value,
+      transmission: document.getElementById("car-transmission").value,
+      turbo: document.getElementById("car-turbo").value,
+      suspension: document.getElementById("car-suspension").value,
+      brakes: document.getElementById("car-brakes").value,
+      tint: document.getElementById("car-tint").value,
+      armor: document.getElementById("car-armor").value,
+      system: checkedSystems,
+    });
+
+    const baseCost = (carValueNew + upgradeTotal) * 0.5;
+    const marginRate = carValueNew < 50000 ? 0.15 : 0.10;
+    currentSuggestedPrice = Math.round(baseCost * (1 + marginRate));
+
+    document.getElementById("suggested-price-amount").textContent = `$${currentSuggestedPrice.toLocaleString()}`;
+  };
+
+  window.useSuggestedPrice = function () {
+    document.getElementById("car-price").value = `$${currentSuggestedPrice.toLocaleString()}`;
+    updatePreview();
+  };
+
   window.checkPassword = function () {
     const input = document.getElementById("password-input").value;
     if (input === ADMIN_PASSWORD) {
@@ -444,6 +563,7 @@
       price: document.getElementById("car-price").value.trim(),
       condition: document.getElementById("car-condition").value.trim(),
       image: document.getElementById("car-image").value.trim(),
+      valueNew: document.getElementById("car-valueNew").value.trim(),
       engineTune: document.getElementById("car-engineTune").value,
       transmission: document.getElementById("car-transmission").value,
       turbo: document.getElementById("car-turbo").value,
@@ -534,6 +654,7 @@
     document.getElementById("car-price").value = car.price || "";
     document.getElementById("car-condition").value = car.condition || "";
     document.getElementById("car-image").value = car.image || "";
+    document.getElementById("car-valueNew").value = car.valueNew || "";
     document.getElementById("car-engineTune").value = car.engineTune || "Stock";
     document.getElementById("car-transmission").value = car.transmission || "Stock";
     document.getElementById("car-turbo").value = car.turbo || "No";
@@ -547,6 +668,7 @@
     });
     document.getElementById("cancel-btn").style.display = "inline-block";
     updatePreview();
+    updateSuggestedPrice();
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -563,6 +685,7 @@
     document.getElementById("car-price").value = "";
     document.getElementById("car-condition").value = "";
     document.getElementById("car-image").value = "";
+    document.getElementById("car-valueNew").value = "";
     document.getElementById("car-engineTune").value = "Stock";
     document.getElementById("car-transmission").value = "Stock";
     document.getElementById("car-turbo").value = "No";
@@ -574,6 +697,7 @@
     document.getElementById("cancel-btn").style.display = "none";
     document.getElementById("status-msg").textContent = "";
     updatePreview();
+    updateSuggestedPrice();
   };
 
   const listEl = document.getElementById("car-list");
