@@ -223,6 +223,43 @@
   .car-row .info p { margin: 0; font-size: 0.82rem; color: #666; }
   .car-row .price-tag { font-weight: bold; color: #b4502c; margin-right: 4px; white-space: nowrap; }
   .empty-msg { color: #777; font-style: italic; }
+
+  /* --- Sell request cards --- */
+  .request-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+  .request-card .request-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .request-card .request-head h3 { margin: 0; font-size: 1rem; }
+  .request-card .request-value { font-weight: bold; color: #b4502c; }
+  .request-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 4px 16px;
+    font-size: 0.82rem;
+    color: #444;
+  }
+  .request-details .label { color: #888; margin-right: 4px; }
+  .request-midnight {
+    margin-top: 8px;
+    font-size: 0.82rem;
+    color: #444;
+    border-top: 1px dashed #eee;
+    padding-top: 8px;
+  }
+  .request-timestamp {
+    font-size: 0.7rem;
+    color: #aaa;
+    margin-top: 6px;
+  }
 </style>
 </head>
 <body>
@@ -349,6 +386,11 @@
     <p class="empty-msg">Loading...</p>
   </div>
 
+  <h2>Sell Requests</h2>
+  <div id="sell-requests-list">
+    <p class="empty-msg">Loading...</p>
+  </div>
+
 </div>
 
 <!-- Firebase -->
@@ -368,11 +410,12 @@
   };
 
   // ⚠️ Simple client-side password. Not real security — just keeps casual visitors out.
-  const ADMIN_PASSWORD = "Reeves1906";
+  const ADMIN_PASSWORD = "changeme";
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
   const carsRef = ref(db, "cars");
+  const sellRequestsRef = ref(db, "sellRequests");
 
   let editingKey = null;
 
@@ -557,6 +600,76 @@
     });
   }, (error) => {
     listEl.innerHTML = '<p class="empty-msg">Could not load inventory. Check the Firebase config.</p>';
+    console.error(error);
+  });
+
+  const requestsListEl = document.getElementById("sell-requests-list");
+
+  onValue(sellRequestsRef, (snapshot) => {
+    const data = snapshot.val();
+
+    if (!data) {
+      requestsListEl.innerHTML = '<p class="empty-msg">No sell requests yet.</p>';
+      return;
+    }
+
+    const entries = Object.entries(data).sort((a, b) => {
+      const ta = a[1].submittedAt || "";
+      const tb = b[1].submittedAt || "";
+      return tb.localeCompare(ta);
+    });
+
+    requestsListEl.innerHTML = entries.map(([key, r]) => {
+      const specRows = [
+        ["Engine Tune", r.engineTune, "Stock"],
+        ["Transmission", r.transmission, "Stock"],
+        ["Turbo", r.turbo, "No"],
+        ["Suspension", r.suspension, "Stock"],
+        ["Brakes", r.brakes, "Stock"],
+        ["Window Tint", r.tint, "None"],
+        ["Armor", r.armor, "Stock"],
+      ].filter(([, value, def]) => value && value !== def);
+
+      const systemList = Array.isArray(r.system) ? r.system : [];
+
+      const specHtml = specRows.map(([label, value]) =>
+        `<div><span class="label">${escapeHtml(label)}:</span>${escapeHtml(value)}</div>`
+      ).join("");
+
+      const systemHtml = systemList.length
+        ? `<div><span class="label">System:</span>${escapeHtml(systemList.join(", "))}</div>`
+        : "";
+
+      const timestamp = r.submittedAt ? new Date(r.submittedAt).toLocaleString() : "";
+
+      return `
+        <div class="request-card">
+          <div class="request-head">
+            <h3>${escapeHtml(r.name || "Unknown")}</h3>
+            <span class="request-value">$${escapeHtml(r.value || "0")}</span>
+          </div>
+          <div class="request-details">
+            <div><span class="label">CID:</span>${escapeHtml(r.cid || "")}</div>
+            <div><span class="label">Phone:</span>${escapeHtml(r.phone || "")}</div>
+            ${specHtml}
+            ${systemHtml}
+          </div>
+          ${r.midnight ? `<div class="request-midnight"><span class="label">Midnight Upgrades:</span> ${escapeHtml(r.midnight)}</div>` : ""}
+          <div class="request-timestamp">${timestamp}</div>
+          <button class="btn-delete" style="margin-top:8px;" data-key="${key}">Delete</button>
+        </div>
+      `;
+    }).join("");
+
+    requestsListEl.querySelectorAll(".btn-delete").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (confirm("Delete this sell request?")) {
+          remove(ref(db, "sellRequests/" + btn.dataset.key));
+        }
+      });
+    });
+  }, (error) => {
+    requestsListEl.innerHTML = '<p class="empty-msg">Could not load sell requests.</p>';
     console.error(error);
   });
 
