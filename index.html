@@ -124,13 +124,6 @@
   .upgrade-row { padding: 1px 0; }
   .upgrade-label { color: #888; }
 
-  .contact {
-    background: #eee;
-    padding: 16px;
-    border-radius: 6px;
-    margin-top: 30px;
-  }
-
   footer {
     text-align: center;
     color: #888;
@@ -143,6 +136,115 @@
     color: #777;
     font-style: italic;
     padding: 10px 0;
+  }
+
+  /* --- Sell Us Your Car form --- */
+  .sell-form {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+  }
+
+  .sell-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .sell-grid label {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.8rem;
+    color: #555;
+    gap: 4px;
+  }
+
+  .sell-grid input,
+  .sell-grid select,
+  .sell-grid textarea {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    background: white;
+  }
+
+  .sell-grid textarea {
+    resize: vertical;
+    min-height: 60px;
+  }
+
+  .sell-full {
+    grid-column: 1 / -1;
+  }
+
+  @media (max-width: 600px) {
+    .sell-grid { grid-template-columns: 1fr; }
+  }
+
+  .dollar-input {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .dollar-input span {
+    background: #eee;
+    padding: 8px 10px;
+    color: #555;
+    font-weight: bold;
+  }
+  .dollar-input input {
+    border: none;
+    flex: 1;
+    padding: 8px;
+    font-size: 0.95rem;
+  }
+
+  .checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    background: #fafaf7;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 10px 12px;
+    margin-top: 4px;
+  }
+  .checkbox-item {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem !important;
+    color: #333 !important;
+  }
+
+  .midnight-note {
+    font-size: 0.78rem;
+    color: #b4502c;
+    margin-top: 6px;
+    font-style: italic;
+  }
+
+  .btn-submit {
+    background: #2b3a2c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 22px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .sell-status {
+    font-size: 0.85rem;
+    margin-top: 10px;
+    min-height: 18px;
   }
 </style>
 </head>
@@ -158,11 +260,109 @@
   <p class="loading-msg">Loading inventory...</p>
 </div>
 
-<h2>Contact</h2>
-<div class="contact">
-  <p><strong>Location:</strong> Paleto Bay, Blaine County</p>
-  <p><strong>Hours:</strong> Daily, 9AM - 9PM</p>
-  <p><strong>Contact:</strong> Message @PaletoRepairs in-game</p>
+<h2>Sell Us Your Car</h2>
+<div class="sell-form">
+  <div class="sell-grid">
+    <label>Name
+      <input type="text" id="sell-name" placeholder="Your name" />
+    </label>
+    <label>CID
+      <input type="text" id="sell-cid" placeholder="Your CID" />
+    </label>
+    <label>Phone Number
+      <input type="text" id="sell-phone" placeholder="Phone number" />
+    </label>
+    <label>Car Value As New
+      <div class="dollar-input">
+        <span>$</span>
+        <input type="number" id="sell-value" placeholder="0" min="0" />
+      </div>
+    </label>
+
+    <label>Engine Tune
+      <select id="sell-engineTune">
+        <option>Stock</option>
+        <option>EMS 2</option>
+        <option>EMS 3</option>
+        <option>EMS 4</option>
+        <option>EMS 5 (Midnight)</option>
+      </select>
+    </label>
+    <label>Transmission
+      <select id="sell-transmission">
+        <option>Stock</option>
+        <option>Street</option>
+        <option>Sports</option>
+        <option>Race</option>
+      </select>
+    </label>
+    <label>Turbo
+      <select id="sell-turbo">
+        <option>No</option>
+        <option>Yes</option>
+      </select>
+    </label>
+    <label>Suspension
+      <select id="sell-suspension">
+        <option>Stock</option>
+        <option>Lowered</option>
+        <option>Street</option>
+        <option>Sport</option>
+        <option>Competition</option>
+      </select>
+    </label>
+    <label>Brakes
+      <select id="sell-brakes">
+        <option>Stock</option>
+        <option>Street</option>
+        <option>Sport</option>
+        <option>Race</option>
+      </select>
+    </label>
+    <label>Window Tint
+      <select id="sell-tint">
+        <option>None</option>
+        <option>Pure Black</option>
+        <option>Darksmoke</option>
+        <option>Lightsmoke</option>
+        <option>Limo</option>
+        <option>Green</option>
+      </select>
+    </label>
+    <label>Armor
+      <select id="sell-armor">
+        <option>Stock</option>
+        <option>20%</option>
+        <option>40%</option>
+        <option>60%</option>
+        <option>80%</option>
+        <option>100%</option>
+      </select>
+    </label>
+
+    <div class="sell-full">
+      <label>System (check any that apply)</label>
+      <div class="checkbox-group">
+        <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Alert System"> Alert System</label>
+        <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Heated Seat"> Heated Seat</label>
+        <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Rainbow Neon"> Rainbow Neon</label>
+        <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Security Locks"> Security Locks</label>
+        <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Dash Cam"> Dash Cam</label>
+      </div>
+    </div>
+
+    <div class="sell-full">
+      <label>Midnight Upgrades (list any)
+        <textarea id="sell-midnight" placeholder="List any midnight upgrades here"></textarea>
+      </label>
+      <p class="midnight-note">At this time we may not buy midnight upgraded cars (EMS 5 excluded).</p>
+    </div>
+
+    <div class="sell-full">
+      <button class="btn-submit" onclick="submitSellRequest()">Submit</button>
+      <div class="sell-status" id="sell-status"></div>
+    </div>
+  </div>
 </div>
 
 <footer>
@@ -172,7 +372,7 @@
 <!-- Firebase -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+  import { getDatabase, ref, onValue, push, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAqmvzexaHohfggxW03ImbBFiomA49f3y0",
@@ -188,6 +388,100 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
   const carsRef = ref(db, "cars");
+  const sellRequestsRef = ref(db, "sellRequests");
+
+  const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1522688935334117578/Imw4AQX6vy4jRhL2a90IgQOqIwtZZOfay3lhLgkF_R90CoJfhri3Eiu4Lmg1LF25kRiP";
+
+  function sendDiscordNotification(data) {
+    const specFields = [
+      ["Engine Tune", data.engineTune, "Stock"],
+      ["Transmission", data.transmission, "Stock"],
+      ["Turbo", data.turbo, "No"],
+      ["Suspension", data.suspension, "Stock"],
+      ["Brakes", data.brakes, "Stock"],
+      ["Window Tint", data.tint, "None"],
+      ["Armor", data.armor, "Stock"],
+    ].filter(([, value, def]) => value && value !== def)
+      .map(([label, value]) => ({ name: label, value: value, inline: true }));
+
+    const fields = [
+      { name: "Name", value: data.name || "—", inline: true },
+      { name: "CID", value: data.cid || "—", inline: true },
+      { name: "Phone", value: data.phone || "—", inline: true },
+      { name: "Value As New", value: data.value ? `$${data.value}` : "—", inline: true },
+      ...specFields,
+    ];
+
+    if (data.system && data.system.length) {
+      fields.push({ name: "System", value: data.system.join(", "), inline: true });
+    }
+    if (data.midnight) {
+      fields.push({ name: "Midnight Upgrades", value: data.midnight, inline: false });
+    }
+
+    const payload = {
+      embeds: [{
+        title: "New Sell Request",
+        color: 0xb4502c,
+        fields,
+        timestamp: data.submittedAt,
+      }],
+    };
+
+    fetch(DISCORD_WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }).catch((err) => console.error("Discord notification failed:", err));
+  }
+
+  window.submitSellRequest = function () {
+    const statusEl = document.getElementById("sell-status");
+    const name = document.getElementById("sell-name").value.trim();
+    const cid = document.getElementById("sell-cid").value.trim();
+    const phone = document.getElementById("sell-phone").value.trim();
+    const value = document.getElementById("sell-value").value.trim();
+
+    if (!name || !phone) {
+      statusEl.textContent = "Name and phone number are required.";
+      statusEl.style.color = "#b4502c";
+      return;
+    }
+
+    const checkedSystems = Array.from(document.querySelectorAll(".sell-system-check:checked")).map(el => el.value);
+
+    const data = {
+      name,
+      cid,
+      phone,
+      value,
+      engineTune: document.getElementById("sell-engineTune").value,
+      transmission: document.getElementById("sell-transmission").value,
+      turbo: document.getElementById("sell-turbo").value,
+      suspension: document.getElementById("sell-suspension").value,
+      brakes: document.getElementById("sell-brakes").value,
+      tint: document.getElementById("sell-tint").value,
+      armor: document.getElementById("sell-armor").value,
+      system: checkedSystems,
+      midnight: document.getElementById("sell-midnight").value.trim(),
+      submittedAt: new Date().toISOString(),
+    };
+
+    set(push(sellRequestsRef), data).then(() => {
+      statusEl.textContent = "Submitted! We'll be in touch.";
+      statusEl.style.color = "green";
+      sendDiscordNotification(data);
+      document.querySelectorAll(".sell-grid input, .sell-grid select, .sell-grid textarea").forEach(el => {
+        if (el.type === "checkbox") el.checked = false;
+        else if (el.tagName === "SELECT") el.selectedIndex = 0;
+        else el.value = "";
+      });
+    }).catch((err) => {
+      statusEl.textContent = "Something went wrong submitting. Try again.";
+      statusEl.style.color = "#b4502c";
+      console.error(err);
+    });
+  };
 
   const listEl = document.getElementById("car-list");
 
