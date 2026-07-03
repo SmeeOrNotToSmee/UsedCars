@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paleto Repairs Used Cars</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #f5f5f0;
+    color: #222;
+  }
+
+  header {
+    text-align: center;
+    padding: 30px 20px;
+    margin: -20px -20px 30px -20px;
+    background: #2b3a2c;
+    color: #fff;
+  }
+
+  header h1 {
+    margin: 0;
+    font-size: 2.2rem;
+    letter-spacing: 1px;
+  }
+
+  header p {
+    color: #cfc9b0;
+    margin-top: 6px;
+  }
+
+  h2 {
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 8px;
+    margin-top: 40px;
+  }
+
+  .car {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 16px;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .car-info h3 {
+    margin: 0 0 4px 0;
+  }
+
+  .car-info p {
+    margin: 0;
+    color: #555;
+    font-size: 0.9rem;
+  }
+
+  .price {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #b4502c;
+    white-space: nowrap;
+  }
+
+  .contact {
+    background: #eee;
+    padding: 16px;
+    border-radius: 6px;
+    margin-top: 30px;
+  }
+
+  footer {
+    text-align: center;
+    color: #888;
+    font-size: 0.8rem;
+    margin-top: 40px;
+    padding: 20px 0;
+  }
+
+  .empty-msg, .loading-msg {
+    color: #777;
+    font-style: italic;
+    padding: 10px 0;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Paleto Repairs Used Cars</h1>
+  <p>Blaine County's used car lot</p>
+</header>
+
+<h2>Cars For Sale</h2>
+<div id="car-list">
+  <p class="loading-msg">Loading inventory...</p>
+</div>
+
+<h2>Contact</h2>
+<div class="contact">
+  <p><strong>Location:</strong> Paleto Bay, Blaine County</p>
+  <p><strong>Hours:</strong> Daily, 9AM - 9PM</p>
+  <p><strong>Contact:</strong> Message @PaletoRepairs in-game</p>
+</div>
+
+<footer>
+  Paleto Repairs Used Cars — fictional dealership for roleplay purposes only.
+</footer>
+
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAqmvzexaHohfggxW03ImbBFiomA49f3y0",
+    authDomain: "used-cars-rp.firebaseapp.com",
+    databaseURL: "https://used-cars-rp-default-rtdb.firebaseio.com",
+    projectId: "used-cars-rp",
+    storageBucket: "used-cars-rp.firebasestorage.app",
+    messagingSenderId: "84719558182",
+    appId: "1:84719558182:web:a4f01302c0a42fcd0c90e7",
+    measurementId: "G-Q6F83G131G"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const carsRef = ref(db, "cars");
+
+  const listEl = document.getElementById("car-list");
+
+  onValue(carsRef, (snapshot) => {
+    const data = snapshot.val();
+
+    if (!data) {
+      listEl.innerHTML = '<p class="empty-msg">No cars on the lot right now. Check back soon.</p>';
+      return;
+    }
+
+    listEl.innerHTML = Object.values(data).map(car => `
+      <div class="car">
+        <div class="car-info">
+          <h3>${escapeHtml(car.name || "")}</h3>
+          <p>${escapeHtml(car.mileage || "")} &middot; ${escapeHtml(car.condition || "")}</p>
+        </div>
+        <div class="price">${escapeHtml(car.price || "")}</div>
+      </div>
+    `).join("");
+  }, (error) => {
+    listEl.innerHTML = '<p class="empty-msg">Could not load inventory. Check the Firebase config.</p>';
+    console.error(error);
+  });
+
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+</script>
+
+</body>
+</html>
