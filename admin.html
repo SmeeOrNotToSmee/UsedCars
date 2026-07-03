@@ -663,7 +663,7 @@
             ${systemHtml}
           </div>
           ${r.midnight ? `<div class="request-midnight"><span class="label">Midnight Upgrades:</span> ${escapeHtml(r.midnight)}</div>` : ""}
-          <div class="request-payout">Estimated Upgrade Payout (50%): <strong>$${payout.toLocaleString()}</strong></div>
+          <div class="request-payout">Estimated Offer (50% of value + upgrades): <strong>$${payout.toLocaleString()}</strong></div>
           <div class="request-timestamp">${timestamp}</div>
           <button class="btn-delete" style="margin-top:8px;" data-key="${key}">Delete</button>
         </div>

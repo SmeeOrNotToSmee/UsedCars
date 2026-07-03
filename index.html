@@ -230,25 +230,67 @@
     font-style: italic;
   }
 
-  .payout-box {
-    display: flex;
-    justify-content: space-between;
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
     align-items: center;
-    background: #2b3a2c;
-    color: #fff;
-    padding: 14px 18px;
-    border-radius: 6px;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
   }
-  .payout-label {
-    font-size: 0.85rem;
-    letter-spacing: 0.03em;
+  .modal-overlay.open {
+    display: flex;
+  }
+  .modal-box {
+    background: white;
+    border-radius: 8px;
+    padding: 26px 24px 22px;
+    width: 100%;
+    max-width: 340px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .modal-close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+    color: #888;
+  }
+  .modal-total-label {
+    font-size: 0.75rem;
     text-transform: uppercase;
-    color: #cfc9b0;
+    letter-spacing: 0.05em;
+    color: #888;
+    text-align: center;
   }
-  .payout-amount {
-    font-size: 1.5rem;
+  .modal-total {
+    font-size: 2rem;
     font-weight: bold;
-    color: #ffd27a;
+    color: #b4502c;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+  .modal-box label {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.8rem;
+    color: #555;
+    gap: 4px;
+  }
+  .modal-box input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.95rem;
   }
 
   .btn-submit {
@@ -284,15 +326,6 @@
 <h2>Sell Us Your Car</h2>
 <div class="sell-form">
   <div class="sell-grid">
-    <label>Name
-      <input type="text" id="sell-name" placeholder="Your name" />
-    </label>
-    <label>CID
-      <input type="text" id="sell-cid" placeholder="Your CID" />
-    </label>
-    <label>Phone Number
-      <input type="text" id="sell-phone" placeholder="Phone number" />
-    </label>
     <label>Car Value As New
       <div class="dollar-input">
         <span>$</span>
@@ -301,7 +334,7 @@
     </label>
 
     <label>Engine Tune
-      <select id="sell-engineTune" onchange="updatePayoutEstimate()">
+      <select id="sell-engineTune">
         <option>Stock</option>
         <option>EMS 2</option>
         <option>EMS 3</option>
@@ -310,7 +343,7 @@
       </select>
     </label>
     <label>Transmission
-      <select id="sell-transmission" onchange="updatePayoutEstimate()">
+      <select id="sell-transmission">
         <option>Stock</option>
         <option>Street</option>
         <option>Sports</option>
@@ -318,13 +351,13 @@
       </select>
     </label>
     <label>Turbo
-      <select id="sell-turbo" onchange="updatePayoutEstimate()">
+      <select id="sell-turbo">
         <option>No</option>
         <option>Yes</option>
       </select>
     </label>
     <label>Suspension
-      <select id="sell-suspension" onchange="updatePayoutEstimate()">
+      <select id="sell-suspension">
         <option>Stock</option>
         <option>Lowered</option>
         <option>Street</option>
@@ -333,7 +366,7 @@
       </select>
     </label>
     <label>Brakes
-      <select id="sell-brakes" onchange="updatePayoutEstimate()">
+      <select id="sell-brakes">
         <option>Stock</option>
         <option>Street</option>
         <option>Sport</option>
@@ -341,7 +374,7 @@
       </select>
     </label>
     <label>Window Tint
-      <select id="sell-tint" onchange="updatePayoutEstimate()">
+      <select id="sell-tint">
         <option>None</option>
         <option>Pure Black</option>
         <option>Darksmoke</option>
@@ -351,7 +384,7 @@
       </select>
     </label>
     <label>Armor
-      <select id="sell-armor" onchange="updatePayoutEstimate()">
+      <select id="sell-armor">
         <option>Stock</option>
         <option>20%</option>
         <option>40%</option>
@@ -364,11 +397,11 @@
     <div class="sell-full">
       <label>System (check any that apply)</label>
       <div class="checkbox-group">
-        <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Alert System" onchange="updatePayoutEstimate()"> Alert System</label>
-        <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Heated Seat" onchange="updatePayoutEstimate()"> Heated Seat</label>
-        <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Rainbow Neon" onchange="updatePayoutEstimate()"> Rainbow Neon</label>
-        <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Security Locks" onchange="updatePayoutEstimate()"> Security Locks</label>
-        <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Dash Cam" onchange="updatePayoutEstimate()"> Dash Cam</label>
+        <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Alert System"> Alert System</label>
+        <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Heated Seat"> Heated Seat</label>
+        <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Rainbow Neon"> Rainbow Neon</label>
+        <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Security Locks"> Security Locks</label>
+        <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Dash Cam"> Dash Cam</label>
       </div>
     </div>
 
@@ -379,15 +412,32 @@
       <p class="midnight-note">At this time we may not buy midnight upgraded cars (EMS 5 excluded).</p>
     </div>
 
-    <div class="sell-full payout-box">
-      <span class="payout-label">Estimated Upgrade Payout (50%)</span>
-      <span class="payout-amount" id="payout-amount">$0</span>
-    </div>
-
     <div class="sell-full">
-      <button class="btn-submit" onclick="submitSellRequest()">Submit</button>
-      <div class="sell-status" id="sell-status"></div>
+      <button class="btn-submit" onclick="openEstimateModal()">Get Estimate</button>
+      <div class="sell-status" id="sell-form-error"></div>
     </div>
+  </div>
+</div>
+
+<!-- Estimate popup -->
+<div class="modal-overlay" id="estimate-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeEstimateModal()">&times;</button>
+    <div class="modal-total-label">Estimated Offer</div>
+    <div class="modal-total" id="modal-total">$0</div>
+
+    <label>Name
+      <input type="text" id="modal-name" placeholder="Your name" />
+    </label>
+    <label>CID
+      <input type="text" id="modal-cid" placeholder="Your CID" />
+    </label>
+    <label>Phone Number
+      <input type="text" id="modal-phone" placeholder="Phone number" />
+    </label>
+
+    <button class="btn-submit" onclick="submitSellRequest()">Submit</button>
+    <div class="sell-status" id="sell-status"></div>
   </div>
 </div>
 
@@ -445,13 +495,6 @@
     return total;
   }
 
-  window.updatePayoutEstimate = function () {
-    const values = getSellFormValues();
-    const total = calculateUpgradeTotal(values);
-    const payout = Math.round(total * 0.5);
-    document.getElementById("payout-amount").textContent = `$${payout.toLocaleString()}`;
-  };
-
   function getSellFormValues() {
     const checkedSystems = Array.from(document.querySelectorAll(".sell-system-check:checked")).map(el => el.value);
     return {
@@ -465,6 +508,32 @@
       system: checkedSystems,
     };
   }
+
+  let currentEstimate = 0;
+
+  window.openEstimateModal = function () {
+    const errorEl = document.getElementById("sell-form-error");
+    const carValue = parseFloat(document.getElementById("sell-value").value) || 0;
+
+    if (!carValue) {
+      errorEl.textContent = "Enter the car's value as new first.";
+      errorEl.style.color = "#b4502c";
+      return;
+    }
+    errorEl.textContent = "";
+
+    const values = getSellFormValues();
+    const upgradeTotal = calculateUpgradeTotal(values);
+    currentEstimate = Math.round((carValue * 0.5) + (upgradeTotal * 0.5));
+
+    document.getElementById("modal-total").textContent = `$${currentEstimate.toLocaleString()}`;
+    document.getElementById("estimate-modal").classList.add("open");
+  };
+
+  window.closeEstimateModal = function () {
+    document.getElementById("estimate-modal").classList.remove("open");
+    document.getElementById("sell-status").textContent = "";
+  };
 
   function sendDiscordNotification(data) {
     const specFields = [
@@ -492,7 +561,7 @@
     if (data.midnight) {
       fields.push({ name: "Midnight Upgrades", value: data.midnight, inline: false });
     }
-    fields.push({ name: "Estimated Upgrade Payout (50%)", value: `$${(data.upgradePayout || 0).toLocaleString()}`, inline: false });
+    fields.push({ name: "Estimated Offer (50% of value + upgrades)", value: `$${(data.upgradePayout || 0).toLocaleString()}`, inline: false });
 
     const payload = {
       embeds: [{
@@ -512,9 +581,9 @@
 
   window.submitSellRequest = function () {
     const statusEl = document.getElementById("sell-status");
-    const name = document.getElementById("sell-name").value.trim();
-    const cid = document.getElementById("sell-cid").value.trim();
-    const phone = document.getElementById("sell-phone").value.trim();
+    const name = document.getElementById("modal-name").value.trim();
+    const cid = document.getElementById("modal-cid").value.trim();
+    const phone = document.getElementById("modal-phone").value.trim();
     const value = document.getElementById("sell-value").value.trim();
 
     if (!name || !phone) {
@@ -539,16 +608,7 @@
       armor: document.getElementById("sell-armor").value,
       system: checkedSystems,
       midnight: document.getElementById("sell-midnight").value.trim(),
-      upgradePayout: Math.round(calculateUpgradeTotal({
-        engineTune: document.getElementById("sell-engineTune").value,
-        transmission: document.getElementById("sell-transmission").value,
-        turbo: document.getElementById("sell-turbo").value,
-        suspension: document.getElementById("sell-suspension").value,
-        brakes: document.getElementById("sell-brakes").value,
-        tint: document.getElementById("sell-tint").value,
-        armor: document.getElementById("sell-armor").value,
-        system: checkedSystems,
-      }) * 0.5),
+      upgradePayout: currentEstimate,
       submittedAt: new Date().toISOString(),
     };
 
@@ -561,7 +621,12 @@
         else if (el.tagName === "SELECT") el.selectedIndex = 0;
         else el.value = "";
       });
-      updatePayoutEstimate();
+      document.getElementById("modal-name").value = "";
+      document.getElementById("modal-cid").value = "";
+      document.getElementById("modal-phone").value = "";
+      setTimeout(() => {
+        closeEstimateModal();
+      }, 1500);
     }).catch((err) => {
       statusEl.textContent = "Something went wrong submitting. Try again.";
       statusEl.style.color = "#b4502c";
