@@ -177,6 +177,8 @@
     display: block; font-size: 0.72rem; text-transform: uppercase;
     letter-spacing: 0.04em; color: #888; margin-bottom: 4px;
   }
+  .upgrade-row { padding: 1px 0; }
+  .upgrade-label { color: #888; }
 
   /* --- Existing cars list --- */
   .car-row {
@@ -236,9 +238,19 @@
         <input type="text" id="car-image" placeholder="https://..." oninput="updatePreview()" />
       </label>
       <div class="hint form-full">Paste a link to an image (e.g. upload to imgur.com and paste the link here).</div>
-      <label class="form-full">Upgrades (one per line)
-        <textarea id="car-upgrades" placeholder="Turbo&#10;Lowered suspension&#10;Custom paint" oninput="updatePreview()"></textarea>
+      <label>Engine
+        <input type="text" id="car-engine" placeholder="e.g. Stage 2 tune" oninput="updatePreview()" />
       </label>
+      <label>Transmission
+        <input type="text" id="car-transmission" placeholder="e.g. 6-speed manual swap" oninput="updatePreview()" />
+      </label>
+      <label>Suspension
+        <input type="text" id="car-suspension" placeholder="e.g. Lowered coilovers" oninput="updatePreview()" />
+      </label>
+      <label>Turbo
+        <input type="text" id="car-turbo" placeholder="e.g. Single turbo kit" oninput="updatePreview()" />
+      </label>
+      <div class="hint form-full">Leave any of these blank and they just won't show up on the card.</div>
       <div class="form-full">
         <button class="btn-save" onclick="saveCar()">Save Car</button>
         <button class="btn-cancel" id="cancel-btn" style="display:none" onclick="resetForm()">Cancel Edit</button>
@@ -276,7 +288,7 @@
   };
 
   // ⚠️ Simple client-side password. Not real security — just keeps casual visitors out.
-  const ADMIN_PASSWORD = "Reeves1906";
+  const ADMIN_PASSWORD = "changeme";
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
@@ -301,7 +313,10 @@
       price: document.getElementById("car-price").value.trim(),
       condition: document.getElementById("car-condition").value.trim(),
       image: document.getElementById("car-image").value.trim(),
-      upgrades: document.getElementById("car-upgrades").value.trim(),
+      engine: document.getElementById("car-engine").value.trim(),
+      transmission: document.getElementById("car-transmission").value.trim(),
+      suspension: document.getElementById("car-suspension").value.trim(),
+      turbo: document.getElementById("car-turbo").value.trim(),
     };
   }
 
@@ -310,13 +325,17 @@
       ? `<img class="car-image" src="${escapeHtml(car.image)}" alt="${escapeHtml(car.name || 'Car photo')}" onerror="this.outerHTML='<div class=&quot;car-image placeholder&quot;>Image failed to load</div>'">`
       : `<div class="car-image placeholder">No image</div>`;
 
-    const upgradesList = (car.upgrades || "")
-      .split("\n")
-      .map(u => u.trim())
-      .filter(Boolean);
+    const upgradeFields = [
+      ["Engine", car.engine],
+      ["Transmission", car.transmission],
+      ["Suspension", car.suspension],
+      ["Turbo", car.turbo],
+    ].filter(([, value]) => value);
 
-    const upgradesHtml = upgradesList.length
-      ? `<div class="upgrades"><strong>Upgrades</strong>${upgradesList.map(u => escapeHtml(u)).join(", ")}</div>`
+    const upgradesHtml = upgradeFields.length
+      ? `<div class="upgrades"><strong>Upgrades</strong>${upgradeFields.map(([label, value]) =>
+          `<div class="upgrade-row"><span class="upgrade-label">${escapeHtml(label)}:</span> ${escapeHtml(value)}</div>`
+        ).join("")}</div>`
       : "";
 
     return `
@@ -369,7 +388,10 @@
     document.getElementById("car-price").value = car.price || "";
     document.getElementById("car-condition").value = car.condition || "";
     document.getElementById("car-image").value = car.image || "";
-    document.getElementById("car-upgrades").value = car.upgrades || "";
+    document.getElementById("car-engine").value = car.engine || "";
+    document.getElementById("car-transmission").value = car.transmission || "";
+    document.getElementById("car-suspension").value = car.suspension || "";
+    document.getElementById("car-turbo").value = car.turbo || "";
     document.getElementById("cancel-btn").style.display = "inline-block";
     updatePreview();
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -388,7 +410,10 @@
     document.getElementById("car-price").value = "";
     document.getElementById("car-condition").value = "";
     document.getElementById("car-image").value = "";
-    document.getElementById("car-upgrades").value = "";
+    document.getElementById("car-engine").value = "";
+    document.getElementById("car-transmission").value = "";
+    document.getElementById("car-suspension").value = "";
+    document.getElementById("car-turbo").value = "";
     document.getElementById("cancel-btn").style.display = "none";
     document.getElementById("status-msg").textContent = "";
     updatePreview();

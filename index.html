@@ -119,6 +119,9 @@
     margin-bottom: 4px;
   }
 
+  .upgrade-row { padding: 1px 0; }
+  .upgrade-label { color: #888; }
+
   .contact {
     background: #eee;
     padding: 16px;
@@ -205,13 +208,17 @@
       ? `<img class="car-image" src="${escapeHtml(car.image)}" alt="${escapeHtml(car.name || 'Car photo')}" onerror="this.outerHTML='<div class=&quot;car-image placeholder&quot;>No image</div>'">`
       : `<div class="car-image placeholder">No image</div>`;
 
-    const upgradesList = (car.upgrades || "")
-      .split("\n")
-      .map(u => u.trim())
-      .filter(Boolean);
+    const upgradeFields = [
+      ["Engine", car.engine],
+      ["Transmission", car.transmission],
+      ["Suspension", car.suspension],
+      ["Turbo", car.turbo],
+    ].filter(([, value]) => value);
 
-    const upgradesHtml = upgradesList.length
-      ? `<div class="upgrades"><strong>Upgrades</strong>${upgradesList.map(u => escapeHtml(u)).join(", ")}</div>`
+    const upgradesHtml = upgradeFields.length
+      ? `<div class="upgrades"><strong>Upgrades</strong>${upgradeFields.map(([label, value]) =>
+          `<div class="upgrade-row"><span class="upgrade-label">${escapeHtml(label)}:</span> ${escapeHtml(value)}</div>`
+        ).join("")}</div>`
       : "";
 
     return `
