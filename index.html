@@ -230,6 +230,27 @@
     font-style: italic;
   }
 
+  .payout-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #2b3a2c;
+    color: #fff;
+    padding: 14px 18px;
+    border-radius: 6px;
+  }
+  .payout-label {
+    font-size: 0.85rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: #cfc9b0;
+  }
+  .payout-amount {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ffd27a;
+  }
+
   .btn-submit {
     background: #2b3a2c;
     color: white;
@@ -280,7 +301,7 @@
     </label>
 
     <label>Engine Tune
-      <select id="sell-engineTune">
+      <select id="sell-engineTune" onchange="updatePayoutEstimate()">
         <option>Stock</option>
         <option>EMS 2</option>
         <option>EMS 3</option>
@@ -289,7 +310,7 @@
       </select>
     </label>
     <label>Transmission
-      <select id="sell-transmission">
+      <select id="sell-transmission" onchange="updatePayoutEstimate()">
         <option>Stock</option>
         <option>Street</option>
         <option>Sports</option>
@@ -297,13 +318,13 @@
       </select>
     </label>
     <label>Turbo
-      <select id="sell-turbo">
+      <select id="sell-turbo" onchange="updatePayoutEstimate()">
         <option>No</option>
         <option>Yes</option>
       </select>
     </label>
     <label>Suspension
-      <select id="sell-suspension">
+      <select id="sell-suspension" onchange="updatePayoutEstimate()">
         <option>Stock</option>
         <option>Lowered</option>
         <option>Street</option>
@@ -312,7 +333,7 @@
       </select>
     </label>
     <label>Brakes
-      <select id="sell-brakes">
+      <select id="sell-brakes" onchange="updatePayoutEstimate()">
         <option>Stock</option>
         <option>Street</option>
         <option>Sport</option>
@@ -320,7 +341,7 @@
       </select>
     </label>
     <label>Window Tint
-      <select id="sell-tint">
+      <select id="sell-tint" onchange="updatePayoutEstimate()">
         <option>None</option>
         <option>Pure Black</option>
         <option>Darksmoke</option>
@@ -330,7 +351,7 @@
       </select>
     </label>
     <label>Armor
-      <select id="sell-armor">
+      <select id="sell-armor" onchange="updatePayoutEstimate()">
         <option>Stock</option>
         <option>20%</option>
         <option>40%</option>
@@ -343,11 +364,11 @@
     <div class="sell-full">
       <label>System (check any that apply)</label>
       <div class="checkbox-group">
-        <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Alert System"> Alert System</label>
-        <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Heated Seat"> Heated Seat</label>
-        <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Rainbow Neon"> Rainbow Neon</label>
-        <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Security Locks"> Security Locks</label>
-        <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Dash Cam"> Dash Cam</label>
+        <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Alert System" onchange="updatePayoutEstimate()"> Alert System</label>
+        <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Heated Seat" onchange="updatePayoutEstimate()"> Heated Seat</label>
+        <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Rainbow Neon" onchange="updatePayoutEstimate()"> Rainbow Neon</label>
+        <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Security Locks" onchange="updatePayoutEstimate()"> Security Locks</label>
+        <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Dash Cam" onchange="updatePayoutEstimate()"> Dash Cam</label>
       </div>
     </div>
 
@@ -356,6 +377,11 @@
         <textarea id="sell-midnight" placeholder="List any midnight upgrades here"></textarea>
       </label>
       <p class="midnight-note">At this time we may not buy midnight upgraded cars (EMS 5 excluded).</p>
+    </div>
+
+    <div class="sell-full payout-box">
+      <span class="payout-label">Estimated Upgrade Payout (50%)</span>
+      <span class="payout-amount" id="payout-amount">$0</span>
     </div>
 
     <div class="sell-full">
@@ -392,6 +418,54 @@
 
   const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1522688935334117578/Imw4AQX6vy4jRhL2a90IgQOqIwtZZOfay3lhLgkF_R90CoJfhri3Eiu4Lmg1LF25kRiP";
 
+  // Full prices for each upgrade. Payout to the seller is 50% of these.
+  const UPGRADE_PRICES = {
+    engineTune: { "EMS 2": 2500, "EMS 3": 3500, "EMS 4": 5000, "EMS 5 (Midnight)": 12000 },
+    transmission: { "Street": 1000, "Sports": 1250, "Race": 1500 },
+    turbo: { "Yes": 6000 },
+    suspension: { "Lowered": 1000, "Street": 2000, "Sport": 3500, "Competition": 4000 },
+    brakes: { "Street": 2000, "Sports": 3000, "Race": 4000 },
+    tint: { "Pure Black": 300, "Darksmoke": 300, "Lightsmoke": 300, "Limo": 250, "Green": 250 },
+    armor: { "20%": 1000, "40%": 3000, "60%": 4000, "80%": 5000, "100%": 7500 },
+    system: { "Alert System": 4000, "Heated Seat": 2500, "Rainbow Neon": 6500, "Security Locks": 5500, "Dash Cam": 1200 },
+  };
+
+  function calculateUpgradeTotal(values) {
+    let total = 0;
+    total += UPGRADE_PRICES.engineTune[values.engineTune] || 0;
+    total += UPGRADE_PRICES.transmission[values.transmission] || 0;
+    total += UPGRADE_PRICES.turbo[values.turbo] || 0;
+    total += UPGRADE_PRICES.suspension[values.suspension] || 0;
+    total += UPGRADE_PRICES.brakes[values.brakes] || 0;
+    total += UPGRADE_PRICES.tint[values.tint] || 0;
+    total += UPGRADE_PRICES.armor[values.armor] || 0;
+    (values.system || []).forEach(sys => {
+      total += UPGRADE_PRICES.system[sys] || 0;
+    });
+    return total;
+  }
+
+  window.updatePayoutEstimate = function () {
+    const values = getSellFormValues();
+    const total = calculateUpgradeTotal(values);
+    const payout = Math.round(total * 0.5);
+    document.getElementById("payout-amount").textContent = `$${payout.toLocaleString()}`;
+  };
+
+  function getSellFormValues() {
+    const checkedSystems = Array.from(document.querySelectorAll(".sell-system-check:checked")).map(el => el.value);
+    return {
+      engineTune: document.getElementById("sell-engineTune").value,
+      transmission: document.getElementById("sell-transmission").value,
+      turbo: document.getElementById("sell-turbo").value,
+      suspension: document.getElementById("sell-suspension").value,
+      brakes: document.getElementById("sell-brakes").value,
+      tint: document.getElementById("sell-tint").value,
+      armor: document.getElementById("sell-armor").value,
+      system: checkedSystems,
+    };
+  }
+
   function sendDiscordNotification(data) {
     const specFields = [
       ["Engine Tune", data.engineTune, "Stock"],
@@ -418,6 +492,7 @@
     if (data.midnight) {
       fields.push({ name: "Midnight Upgrades", value: data.midnight, inline: false });
     }
+    fields.push({ name: "Estimated Upgrade Payout (50%)", value: `$${(data.upgradePayout || 0).toLocaleString()}`, inline: false });
 
     const payload = {
       embeds: [{
@@ -464,6 +539,16 @@
       armor: document.getElementById("sell-armor").value,
       system: checkedSystems,
       midnight: document.getElementById("sell-midnight").value.trim(),
+      upgradePayout: Math.round(calculateUpgradeTotal({
+        engineTune: document.getElementById("sell-engineTune").value,
+        transmission: document.getElementById("sell-transmission").value,
+        turbo: document.getElementById("sell-turbo").value,
+        suspension: document.getElementById("sell-suspension").value,
+        brakes: document.getElementById("sell-brakes").value,
+        tint: document.getElementById("sell-tint").value,
+        armor: document.getElementById("sell-armor").value,
+        system: checkedSystems,
+      }) * 0.5),
       submittedAt: new Date().toISOString(),
     };
 
@@ -476,6 +561,7 @@
         else if (el.tagName === "SELECT") el.selectedIndex = 0;
         else el.value = "";
       });
+      updatePayoutEstimate();
     }).catch((err) => {
       statusEl.textContent = "Something went wrong submitting. Try again.";
       statusEl.style.color = "#b4502c";
