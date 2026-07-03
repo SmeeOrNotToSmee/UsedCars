@@ -209,16 +209,27 @@
       : `<div class="car-image placeholder">No image</div>`;
 
     const upgradeFields = [
-      ["Engine", car.engine],
-      ["Transmission", car.transmission],
-      ["Suspension", car.suspension],
-      ["Turbo", car.turbo],
-    ].filter(([, value]) => value);
+      ["Engine Tune", car.engineTune, "Stock"],
+      ["Transmission", car.transmission, "Stock"],
+      ["Turbo", car.turbo, "No"],
+      ["Suspension", car.suspension, "Stock"],
+      ["Brakes", car.brakes, "Stock"],
+      ["Window Tint", car.tint, "None"],
+      ["Armor", car.armor, "Stock"],
+    ].filter(([, value, defaultValue]) => value && value !== defaultValue);
 
-    const upgradesHtml = upgradeFields.length
-      ? `<div class="upgrades"><strong>Upgrades</strong>${upgradeFields.map(([label, value]) =>
-          `<div class="upgrade-row"><span class="upgrade-label">${escapeHtml(label)}:</span> ${escapeHtml(value)}</div>`
-        ).join("")}</div>`
+    const systemList = Array.isArray(car.system) ? car.system : [];
+
+    const upgradeRowsHtml = upgradeFields.map(([label, value]) =>
+      `<div class="upgrade-row"><span class="upgrade-label">${escapeHtml(label)}:</span> ${escapeHtml(value)}</div>`
+    ).join("");
+
+    const systemRowHtml = systemList.length
+      ? `<div class="upgrade-row"><span class="upgrade-label">System:</span> ${escapeHtml(systemList.join(", "))}</div>`
+      : "";
+
+    const upgradesHtml = (upgradeFields.length || systemList.length)
+      ? `<div class="upgrades"><strong>Upgrades</strong>${upgradeRowsHtml}${systemRowHtml}</div>`
       : "";
 
     return `
