@@ -87,16 +87,35 @@
     gap: 4px;
   }
   .form-grid input,
-  .form-grid textarea {
+  .form-grid textarea,
+  .form-grid select {
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 0.95rem;
     font-family: inherit;
+    background: white;
   }
   .form-grid textarea {
     resize: vertical;
     min-height: 60px;
+  }
+  .checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    background: #fafaf7;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 10px 12px;
+  }
+  .checkbox-item {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem !important;
+    color: #333 !important;
   }
   .form-full { grid-column: 1 / -1; }
   .hint {
@@ -238,19 +257,80 @@
         <input type="text" id="car-image" placeholder="https://..." oninput="updatePreview()" />
       </label>
       <div class="hint form-full">Paste a link to an image (e.g. upload to imgur.com and paste the link here).</div>
-      <label>Engine
-        <input type="text" id="car-engine" placeholder="e.g. Stage 2 tune" oninput="updatePreview()" />
+
+      <label>Engine Tune
+        <select id="car-engineTune" onchange="updatePreview()">
+          <option>Stock</option>
+          <option>EMS 2</option>
+          <option>EMS 3</option>
+          <option>EMS 4</option>
+          <option>EMS 5 (Midnight)</option>
+        </select>
       </label>
       <label>Transmission
-        <input type="text" id="car-transmission" placeholder="e.g. 6-speed manual swap" oninput="updatePreview()" />
-      </label>
-      <label>Suspension
-        <input type="text" id="car-suspension" placeholder="e.g. Lowered coilovers" oninput="updatePreview()" />
+        <select id="car-transmission" onchange="updatePreview()">
+          <option>Stock</option>
+          <option>Street</option>
+          <option>Sports</option>
+          <option>Race</option>
+        </select>
       </label>
       <label>Turbo
-        <input type="text" id="car-turbo" placeholder="e.g. Single turbo kit" oninput="updatePreview()" />
+        <select id="car-turbo" onchange="updatePreview()">
+          <option>No</option>
+          <option>Yes</option>
+        </select>
       </label>
-      <div class="hint form-full">Leave any of these blank and they just won't show up on the card.</div>
+      <label>Suspension
+        <select id="car-suspension" onchange="updatePreview()">
+          <option>Stock</option>
+          <option>Lowered</option>
+          <option>Street</option>
+          <option>Sport</option>
+          <option>Competition</option>
+        </select>
+      </label>
+      <label>Brakes
+        <select id="car-brakes" onchange="updatePreview()">
+          <option>Stock</option>
+          <option>Street</option>
+          <option>Sport</option>
+          <option>Race</option>
+        </select>
+      </label>
+      <label>Window Tint
+        <select id="car-tint" onchange="updatePreview()">
+          <option>None</option>
+          <option>Pure Black</option>
+          <option>Darksmoke</option>
+          <option>Lightsmoke</option>
+          <option>Limo</option>
+          <option>Green</option>
+        </select>
+      </label>
+      <label>Armor
+        <select id="car-armor" onchange="updatePreview()">
+          <option>Stock</option>
+          <option>20%</option>
+          <option>40%</option>
+          <option>60%</option>
+          <option>80%</option>
+          <option>100%</option>
+        </select>
+      </label>
+
+      <div class="form-full">
+        <label style="margin-bottom:6px;">System (check any that apply)</label>
+        <div class="checkbox-group">
+          <label class="checkbox-item"><input type="checkbox" class="system-check" value="Alert System" onchange="updatePreview()"> Alert System</label>
+          <label class="checkbox-item"><input type="checkbox" class="system-check" value="Heated Seat" onchange="updatePreview()"> Heated Seat</label>
+          <label class="checkbox-item"><input type="checkbox" class="system-check" value="Rainbow Neon" onchange="updatePreview()"> Rainbow Neon</label>
+          <label class="checkbox-item"><input type="checkbox" class="system-check" value="Security Locks" onchange="updatePreview()"> Security Locks</label>
+          <label class="checkbox-item"><input type="checkbox" class="system-check" value="Dash Cam" onchange="updatePreview()"> Dash Cam</label>
+        </div>
+      </div>
+
+      <div class="hint form-full">Anything left as "Stock" / "None" / "No" won't show up on the card — only real upgrades display.</div>
       <div class="form-full">
         <button class="btn-save" onclick="saveCar()">Save Car</button>
         <button class="btn-cancel" id="cancel-btn" style="display:none" onclick="resetForm()">Cancel Edit</button>
@@ -288,7 +368,7 @@
   };
 
   // ⚠️ Simple client-side password. Not real security — just keeps casual visitors out.
-  const ADMIN_PASSWORD = "Reeves1906";
+  const ADMIN_PASSWORD = "changeme";
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
@@ -308,15 +388,20 @@
   };
 
   function getFormValues() {
+    const checkedSystems = Array.from(document.querySelectorAll(".system-check:checked")).map(el => el.value);
     return {
       name: document.getElementById("car-name").value.trim(),
       price: document.getElementById("car-price").value.trim(),
       condition: document.getElementById("car-condition").value.trim(),
       image: document.getElementById("car-image").value.trim(),
-      engine: document.getElementById("car-engine").value.trim(),
-      transmission: document.getElementById("car-transmission").value.trim(),
-      suspension: document.getElementById("car-suspension").value.trim(),
-      turbo: document.getElementById("car-turbo").value.trim(),
+      engineTune: document.getElementById("car-engineTune").value,
+      transmission: document.getElementById("car-transmission").value,
+      turbo: document.getElementById("car-turbo").value,
+      suspension: document.getElementById("car-suspension").value,
+      brakes: document.getElementById("car-brakes").value,
+      tint: document.getElementById("car-tint").value,
+      armor: document.getElementById("car-armor").value,
+      system: checkedSystems,
     };
   }
 
@@ -326,16 +411,27 @@
       : `<div class="car-image placeholder">No image</div>`;
 
     const upgradeFields = [
-      ["Engine", car.engine],
-      ["Transmission", car.transmission],
-      ["Suspension", car.suspension],
-      ["Turbo", car.turbo],
-    ].filter(([, value]) => value);
+      ["Engine Tune", car.engineTune, "Stock"],
+      ["Transmission", car.transmission, "Stock"],
+      ["Turbo", car.turbo, "No"],
+      ["Suspension", car.suspension, "Stock"],
+      ["Brakes", car.brakes, "Stock"],
+      ["Window Tint", car.tint, "None"],
+      ["Armor", car.armor, "Stock"],
+    ].filter(([, value, defaultValue]) => value && value !== defaultValue);
 
-    const upgradesHtml = upgradeFields.length
-      ? `<div class="upgrades"><strong>Upgrades</strong>${upgradeFields.map(([label, value]) =>
-          `<div class="upgrade-row"><span class="upgrade-label">${escapeHtml(label)}:</span> ${escapeHtml(value)}</div>`
-        ).join("")}</div>`
+    const systemList = Array.isArray(car.system) ? car.system : [];
+
+    const upgradeRowsHtml = upgradeFields.map(([label, value]) =>
+      `<div class="upgrade-row"><span class="upgrade-label">${escapeHtml(label)}:</span> ${escapeHtml(value)}</div>`
+    ).join("");
+
+    const systemRowHtml = systemList.length
+      ? `<div class="upgrade-row"><span class="upgrade-label">System:</span> ${escapeHtml(systemList.join(", "))}</div>`
+      : "";
+
+    const upgradesHtml = (upgradeFields.length || systemList.length)
+      ? `<div class="upgrades"><strong>Upgrades</strong>${upgradeRowsHtml}${systemRowHtml}</div>`
       : "";
 
     return `
@@ -388,10 +484,17 @@
     document.getElementById("car-price").value = car.price || "";
     document.getElementById("car-condition").value = car.condition || "";
     document.getElementById("car-image").value = car.image || "";
-    document.getElementById("car-engine").value = car.engine || "";
-    document.getElementById("car-transmission").value = car.transmission || "";
-    document.getElementById("car-suspension").value = car.suspension || "";
-    document.getElementById("car-turbo").value = car.turbo || "";
+    document.getElementById("car-engineTune").value = car.engineTune || "Stock";
+    document.getElementById("car-transmission").value = car.transmission || "Stock";
+    document.getElementById("car-turbo").value = car.turbo || "No";
+    document.getElementById("car-suspension").value = car.suspension || "Stock";
+    document.getElementById("car-brakes").value = car.brakes || "Stock";
+    document.getElementById("car-tint").value = car.tint || "None";
+    document.getElementById("car-armor").value = car.armor || "Stock";
+    const systemList = Array.isArray(car.system) ? car.system : [];
+    document.querySelectorAll(".system-check").forEach(el => {
+      el.checked = systemList.includes(el.value);
+    });
     document.getElementById("cancel-btn").style.display = "inline-block";
     updatePreview();
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -410,10 +513,14 @@
     document.getElementById("car-price").value = "";
     document.getElementById("car-condition").value = "";
     document.getElementById("car-image").value = "";
-    document.getElementById("car-engine").value = "";
-    document.getElementById("car-transmission").value = "";
-    document.getElementById("car-suspension").value = "";
-    document.getElementById("car-turbo").value = "";
+    document.getElementById("car-engineTune").value = "Stock";
+    document.getElementById("car-transmission").value = "Stock";
+    document.getElementById("car-turbo").value = "No";
+    document.getElementById("car-suspension").value = "Stock";
+    document.getElementById("car-brakes").value = "Stock";
+    document.getElementById("car-tint").value = "None";
+    document.getElementById("car-armor").value = "Stock";
+    document.querySelectorAll(".system-check").forEach(el => { el.checked = false; });
     document.getElementById("cancel-btn").style.display = "none";
     document.getElementById("status-msg").textContent = "";
     updatePreview();
