@@ -260,6 +260,13 @@
     color: #aaa;
     margin-top: 6px;
   }
+  .request-payout {
+    font-size: 0.85rem;
+    color: #2b3a2c;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #eee;
+  }
 </style>
 </head>
 <body>
@@ -641,12 +648,13 @@
         : "";
 
       const timestamp = r.submittedAt ? new Date(r.submittedAt).toLocaleString() : "";
+      const payout = r.upgradePayout || 0;
 
       return `
         <div class="request-card">
           <div class="request-head">
             <h3>${escapeHtml(r.name || "Unknown")}</h3>
-            <span class="request-value">$${escapeHtml(r.value || "0")}</span>
+            <span class="request-value">Value: $${escapeHtml(r.value || "0")}</span>
           </div>
           <div class="request-details">
             <div><span class="label">CID:</span>${escapeHtml(r.cid || "")}</div>
@@ -655,6 +663,7 @@
             ${systemHtml}
           </div>
           ${r.midnight ? `<div class="request-midnight"><span class="label">Midnight Upgrades:</span> ${escapeHtml(r.midnight)}</div>` : ""}
+          <div class="request-payout">Estimated Upgrade Payout (50%): <strong>$${payout.toLocaleString()}</strong></div>
           <div class="request-timestamp">${timestamp}</div>
           <button class="btn-delete" style="margin-top:8px;" data-key="${key}">Delete</button>
         </div>
