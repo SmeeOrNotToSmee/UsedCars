@@ -80,14 +80,10 @@
     overflow: hidden;
     border: 4px solid var(--red);
     box-shadow: 0 0 0 8px var(--black), 0 14px 30px rgba(0,0,0,0.55);
-  }
-
-  .logo-img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
+    background-image: url('https://i.postimg.cc/C1MC2BTt/Vn9l2.jpg');
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-size: 160% 121%;
   }
 
   .hero-tagline {
@@ -243,6 +239,18 @@
   }
 
   /* --- Sell Us Your Car form --- */
+  .sell-cta {
+    background: var(--cream-soft);
+    border: 2px solid var(--black);
+    border-radius: 6px;
+    padding: 26px 20px;
+    text-align: center;
+  }
+  .sell-cta p {
+    margin: 0 0 16px 0;
+    color: #4a4433;
+    font-size: 0.95rem;
+  }
   .sell-form {
     background: var(--cream-soft);
     border: 2px solid var(--black);
@@ -360,10 +368,24 @@
     padding: 26px 24px 22px;
     width: 100%;
     max-width: 340px;
+    max-height: 90vh;
+    overflow-y: auto;
     position: relative;
     display: flex;
     flex-direction: column;
     gap: 12px;
+  }
+  .modal-box-wide {
+    max-width: 640px;
+  }
+  .modal-heading {
+    font-family: 'Oswald', Arial, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 1.3rem;
+    color: var(--black);
+    text-align: center;
+    margin: 0 0 6px 0;
   }
   .modal-close {
     position: absolute;
@@ -440,9 +462,7 @@
 <section class="hero">
   <div class="shutter" aria-hidden="true"></div>
   <div class="hero-content">
-    <div class="logo-frame">
-      <img src="https://i.postimg.cc/C1MC2BTt/Vn9l2.jpg" alt="Paleto Repairs" class="logo-img">
-    </div>
+    <div class="logo-frame" role="img" aria-label="Paleto Repairs logo"></div>
     <p class="hero-tagline">Quality Used Cars</p>
     <div class="hero-tread"></div>
   </div>
@@ -456,97 +476,107 @@
 
 <h2>Sell Us Your Car</h2>
 <div class="tread-divider"></div>
-<div class="sell-form">
-  <div class="sell-grid">
-    <label>Car Value As New
-      <div class="dollar-input">
-        <span>$</span>
-        <input type="number" id="sell-value" placeholder="0" min="0" />
-      </div>
-    </label>
+<div class="sell-cta">
+  <p>Have a car with some upgrades? Get an instant estimate on what we'll pay.</p>
+  <button class="btn-submit" onclick="openSellModal()">Sell Your Car</button>
+</div>
 
-    <label>Engine Tune
-      <select id="sell-engineTune">
-        <option>Stock</option>
-        <option>EMS 2</option>
-        <option>EMS 3</option>
-        <option>EMS 4</option>
-        <option>EMS 5 (Midnight)</option>
-      </select>
-    </label>
-    <label>Transmission
-      <select id="sell-transmission">
-        <option>Stock</option>
-        <option>Street</option>
-        <option>Sports</option>
-        <option>Race</option>
-      </select>
-    </label>
-    <label>Turbo
-      <select id="sell-turbo">
-        <option>No</option>
-        <option>Yes</option>
-      </select>
-    </label>
-    <label>Suspension
-      <select id="sell-suspension">
-        <option>Stock</option>
-        <option>Lowered</option>
-        <option>Street</option>
-        <option>Sport</option>
-        <option>Competition</option>
-      </select>
-    </label>
-    <label>Brakes
-      <select id="sell-brakes">
-        <option>Stock</option>
-        <option>Street</option>
-        <option>Sport</option>
-        <option>Race</option>
-      </select>
-    </label>
-    <label>Window Tint
-      <select id="sell-tint">
-        <option>None</option>
-        <option>Pure Black</option>
-        <option>Darksmoke</option>
-        <option>Lightsmoke</option>
-        <option>Limo</option>
-        <option>Green</option>
-      </select>
-    </label>
-    <label>Armor
-      <select id="sell-armor">
-        <option>Stock</option>
-        <option>20%</option>
-        <option>40%</option>
-        <option>60%</option>
-        <option>80%</option>
-        <option>100%</option>
-      </select>
-    </label>
-
-    <div class="sell-full">
-      <label>System (check any that apply)</label>
-      <div class="checkbox-group">
-        <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Alert System"> Alert System</label>
-        <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Heated Seat"> Heated Seat</label>
-        <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Rainbow Neon"> Rainbow Neon</label>
-        <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Security Locks"> Security Locks</label>
-        <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Dash Cam"> Dash Cam</label>
-      </div>
-    </div>
-
-    <div class="sell-full">
-      <label>Midnight Upgrades (list any)
-        <textarea id="sell-midnight" placeholder="List any midnight upgrades here"></textarea>
+<!-- Sell form popup -->
+<div class="modal-overlay" id="sell-modal">
+  <div class="modal-box modal-box-wide">
+    <button class="modal-close" onclick="closeSellModal()">&times;</button>
+    <h3 class="modal-heading">Sell Us Your Car</h3>
+    <div class="sell-grid">
+      <label>Car Value As New
+        <div class="dollar-input">
+          <span>$</span>
+          <input type="number" id="sell-value" placeholder="0" min="0" />
+        </div>
       </label>
-      <p class="midnight-note">At this time we may not buy midnight upgraded cars (EMS 5 excluded).</p>
-    </div>
 
-    <div class="sell-full">
-      <button class="btn-submit" onclick="openEstimateModal()">Get Estimate</button>
-      <div class="sell-status" id="sell-form-error"></div>
+      <label>Engine Tune
+        <select id="sell-engineTune">
+          <option>Stock</option>
+          <option>EMS 2</option>
+          <option>EMS 3</option>
+          <option>EMS 4</option>
+          <option>EMS 5 (Midnight)</option>
+        </select>
+      </label>
+      <label>Transmission
+        <select id="sell-transmission">
+          <option>Stock</option>
+          <option>Street</option>
+          <option>Sports</option>
+          <option>Race</option>
+        </select>
+      </label>
+      <label>Turbo
+        <select id="sell-turbo">
+          <option>No</option>
+          <option>Yes</option>
+        </select>
+      </label>
+      <label>Suspension
+        <select id="sell-suspension">
+          <option>Stock</option>
+          <option>Lowered</option>
+          <option>Street</option>
+          <option>Sport</option>
+          <option>Competition</option>
+        </select>
+      </label>
+      <label>Brakes
+        <select id="sell-brakes">
+          <option>Stock</option>
+          <option>Street</option>
+          <option>Sport</option>
+          <option>Race</option>
+        </select>
+      </label>
+      <label>Window Tint
+        <select id="sell-tint">
+          <option>None</option>
+          <option>Pure Black</option>
+          <option>Darksmoke</option>
+          <option>Lightsmoke</option>
+          <option>Limo</option>
+          <option>Green</option>
+        </select>
+      </label>
+      <label>Armor
+        <select id="sell-armor">
+          <option>Stock</option>
+          <option>20%</option>
+          <option>40%</option>
+          <option>60%</option>
+          <option>80%</option>
+          <option>100%</option>
+        </select>
+      </label>
+
+      <div class="sell-full">
+        <label>System (check any that apply)</label>
+        <div class="checkbox-group">
+          <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Alert System"> Alert System</label>
+          <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Heated Seat"> Heated Seat</label>
+          <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Rainbow Neon"> Rainbow Neon</label>
+          <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Security Locks"> Security Locks</label>
+          <label class="checkbox-item"><input type="checkbox" class="sell-system-check" value="Dash Cam"> Dash Cam</label>
+        </div>
+      </div>
+
+      <div class="sell-full">
+        <label>Midnight Upgrades (list any)
+          <textarea id="sell-midnight" placeholder="List any midnight upgrades here"></textarea>
+        </label>
+        <p class="midnight-note">At this time we may not buy midnight upgraded cars (EMS 5 excluded).</p>
+      </div>
+
+      <div class="sell-full">
+        <button class="btn-submit" onclick="openEstimateModal()">Get Estimate</button>
+        <div class="sell-status" id="sell-form-error"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -643,6 +673,14 @@
 
   let currentEstimate = 0;
 
+  window.openSellModal = function () {
+    document.getElementById("sell-modal").classList.add("open");
+  };
+
+  window.closeSellModal = function () {
+    document.getElementById("sell-modal").classList.remove("open");
+  };
+
   window.openEstimateModal = function () {
     const errorEl = document.getElementById("sell-form-error");
     const carValue = parseFloat(document.getElementById("sell-value").value) || 0;
@@ -659,6 +697,7 @@
     currentEstimate = Math.round((carValue * 0.5) + (upgradeTotal * 0.5));
 
     document.getElementById("modal-total").textContent = `$${currentEstimate.toLocaleString()}`;
+    closeSellModal();
     document.getElementById("estimate-modal").classList.add("open");
   };
 
