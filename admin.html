@@ -371,8 +371,8 @@
       <label>Price
         <input type="text" id="car-price" placeholder="e.g. $8,500" oninput="updatePreview()" />
       </label>
-      <label>Condition
-        <input type="text" id="car-condition" placeholder="e.g. Runs Good" oninput="updatePreview()" />
+      <label>Storage Size
+        <input type="text" id="car-storage" placeholder="e.g. 50 Slots" oninput="updatePreview()" />
       </label>
       <label>Image URL
         <input type="text" id="car-image" placeholder="https://..." oninput="updatePreview()" />
@@ -585,7 +585,7 @@
     return {
       name: document.getElementById("car-name").value.trim(),
       price: document.getElementById("car-price").value.trim(),
-      condition: document.getElementById("car-condition").value.trim(),
+      storage: document.getElementById("car-storage").value.trim(),
       image: document.getElementById("car-image").value.trim(),
       valueNew: document.getElementById("car-valueNew").value.trim(),
       engineTune: document.getElementById("car-engineTune").value,
@@ -633,7 +633,7 @@
         ${imageHtml}
         <div class="car-body">
           <h3>${escapeHtml(car.name || "Untitled Car")}</h3>
-          ${car.condition ? `<span class="badge">${escapeHtml(car.condition)}</span>` : ""}
+          ${car.storage ? `<span class="badge">${escapeHtml(car.storage)}</span>` : ""}
           <div class="price">${escapeHtml(car.price || "")}</div>
           ${upgradesHtml}
         </div>
@@ -676,7 +676,7 @@
     document.getElementById("form-title").textContent = "Edit Car";
     document.getElementById("car-name").value = car.name || "";
     document.getElementById("car-price").value = car.price || "";
-    document.getElementById("car-condition").value = car.condition || "";
+    document.getElementById("car-storage").value = car.storage || "";
     document.getElementById("car-image").value = car.image || "";
     document.getElementById("car-valueNew").value = car.valueNew || "";
     document.getElementById("car-engineTune").value = car.engineTune || "Stock";
@@ -711,7 +711,7 @@
     document.getElementById("form-title").textContent = "Add a Car";
     document.getElementById("car-name").value = "";
     document.getElementById("car-price").value = "";
-    document.getElementById("car-condition").value = "";
+    document.getElementById("car-storage").value = "";
     document.getElementById("car-image").value = "";
     document.getElementById("car-valueNew").value = "";
     document.getElementById("car-engineTune").value = "Stock";
@@ -743,7 +743,7 @@
         ${car.image ? `<img src="${escapeHtml(car.image)}" alt="" onerror="this.style.display='none'">` : ""}
         <div class="info">
           <h3>${escapeHtml(car.name || "")}${car.sold ? ' <span class="sold-tag">SOLD</span>' : ''}</h3>
-          <p>${escapeHtml(car.condition || "")}</p>
+          <p>${escapeHtml(car.storage || "")}</p>
         </div>
         <span class="price-tag">${escapeHtml(car.price || "")}</span>
         <button class="btn-sold" data-key="${key}" data-sold="${car.sold ? 'true' : 'false'}">${car.sold ? 'Mark Available' : 'Mark Sold'}</button>

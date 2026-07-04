@@ -884,7 +884,7 @@
         </div>
         <div class="car-body">
           <h3>${escapeHtml(car.name || "")}</h3>
-          ${car.condition ? `<span class="badge">${escapeHtml(car.condition)}</span>` : ""}
+          ${car.storage ? `<span class="badge">${escapeHtml(car.storage)}</span>` : ""}
           <div class="price">${escapeHtml(car.price || "")}</div>
           ${upgradesHtml}
         </div>
