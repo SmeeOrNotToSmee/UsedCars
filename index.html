@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Paleto Repairs Used Cars</title>
+<link rel="icon" type="image/png" href="https://i.postimg.cc/MKxb4XLB/PB-Logo.png">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&display=swap');
 
@@ -884,7 +885,7 @@
         </div>
         <div class="car-body">
           <h3>${escapeHtml(car.name || "")}</h3>
-          ${car.storage ? `<span class="badge">${escapeHtml(car.storage)}</span>` : ""}
+          ${car.storage ? `<span class="badge">Storage: ${escapeHtml(car.storage)}</span>` : ""}
           <div class="price">${escapeHtml(car.price || "")}</div>
           ${upgradesHtml}
         </div>
