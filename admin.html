@@ -275,6 +275,30 @@
   .car-row .info h3 { margin: 0 0 3px 0; font-size: 1rem; }
   .car-row .info p { margin: 0; font-size: 0.82rem; color: #666; }
   .car-row .price-tag { font-weight: bold; color: #b4502c; margin-right: 4px; white-space: nowrap; }
+  .car-row-sold { opacity: 0.6; background: #f2f2f2; }
+  .sold-tag {
+    display: inline-block;
+    background: #b4502c;
+    color: white;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .btn-sold {
+    background: #444;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    cursor: pointer;
+    white-space: nowrap;
+  }
   .empty-msg { color: #777; font-style: italic; }
 
   /* --- Sell request cards --- */
@@ -467,7 +491,7 @@
 <!-- Firebase -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getDatabase, ref, push, set, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+  import { getDatabase, ref, push, set, remove, update, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAqmvzexaHohfggxW03ImbBFiomA49f3y0",
@@ -678,6 +702,10 @@
     }
   };
 
+  window.toggleSold = function (key, currentlySold) {
+    update(ref(db, "cars/" + key), { sold: !currentlySold });
+  };
+
   window.resetForm = function () {
     editingKey = null;
     document.getElementById("form-title").textContent = "Add a Car";
@@ -711,13 +739,14 @@
     }
 
     listEl.innerHTML = Object.entries(data).map(([key, car]) => `
-      <div class="car-row">
+      <div class="car-row${car.sold ? ' car-row-sold' : ''}">
         ${car.image ? `<img src="${escapeHtml(car.image)}" alt="" onerror="this.style.display='none'">` : ""}
         <div class="info">
-          <h3>${escapeHtml(car.name || "")}</h3>
+          <h3>${escapeHtml(car.name || "")}${car.sold ? ' <span class="sold-tag">SOLD</span>' : ''}</h3>
           <p>${escapeHtml(car.condition || "")}</p>
         </div>
         <span class="price-tag">${escapeHtml(car.price || "")}</span>
+        <button class="btn-sold" data-key="${key}" data-sold="${car.sold ? 'true' : 'false'}">${car.sold ? 'Mark Available' : 'Mark Sold'}</button>
         <button class="btn-edit" data-key="${key}">Edit</button>
         <button class="btn-delete" data-key="${key}">Delete</button>
       </div>
@@ -728,6 +757,9 @@
     });
     listEl.querySelectorAll(".btn-delete").forEach(btn => {
       btn.addEventListener("click", () => window.deleteCar(btn.dataset.key));
+    });
+    listEl.querySelectorAll(".btn-sold").forEach(btn => {
+      btn.addEventListener("click", () => window.toggleSold(btn.dataset.key, btn.dataset.sold === "true"));
     });
   }, (error) => {
     listEl.innerHTML = '<p class="empty-msg">Could not load inventory. Check the Firebase config.</p>';

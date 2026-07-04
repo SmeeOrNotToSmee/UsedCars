@@ -148,6 +148,15 @@
     width: 260px;
   }
 
+  .car-card.car-card-sold {
+    opacity: 0.7;
+    filter: grayscale(40%);
+  }
+
+  .car-image-wrap {
+    position: relative;
+  }
+
   .car-card .car-image {
     width: 100%;
     height: 170px;
@@ -163,6 +172,23 @@
     justify-content: center;
     color: #776b4f;
     font-size: 0.85rem;
+  }
+
+  .sold-stamp {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-12deg);
+    border: 4px solid var(--red);
+    color: var(--red);
+    background: rgba(244, 236, 216, 0.85);
+    font-family: 'Oswald', Arial, sans-serif;
+    font-weight: 700;
+    font-size: 1.6rem;
+    letter-spacing: 0.1em;
+    padding: 4px 18px;
+    border-radius: 4px;
+    pointer-events: none;
   }
 
   .car-card .car-body {
@@ -851,8 +877,11 @@
       : "";
 
     return `
-      <div class="car-card">
-        ${imageHtml}
+      <div class="car-card${car.sold ? ' car-card-sold' : ''}">
+        <div class="car-image-wrap">
+          ${imageHtml}
+          ${car.sold ? '<div class="sold-stamp">SOLD</div>' : ''}
+        </div>
         <div class="car-body">
           <h3>${escapeHtml(car.name || "")}</h3>
           ${car.condition ? `<span class="badge">${escapeHtml(car.condition)}</span>` : ""}
