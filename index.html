@@ -5,38 +5,76 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Paleto Repairs Used Cars</title>
 <style>
+  :root {
+    --black: #1c1a17;
+    --cream: #ece0c4;
+    --red: #a03327;
+    --red-dark: #7c261c;
+  }
+
   body {
     font-family: Arial, sans-serif;
     max-width: 1000px;
     margin: 0 auto;
     padding: 20px;
-    background: #f5f5f0;
+    background: #f4efe1;
     color: #222;
   }
 
-  header {
-    text-align: center;
-    padding: 30px 20px;
+  /* --- Hero / shutter reveal --- */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    background: var(--black);
     margin: -20px -20px 30px -20px;
-    background: #2b3a2c;
-    color: #fff;
+    min-height: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  header h1 {
-    margin: 0;
-    font-size: 2.2rem;
-    letter-spacing: 1px;
+  .shutter {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    background: repeating-linear-gradient(
+      0deg,
+      #8a8d8f 0px, #8a8d8f 24px,
+      #75787a 24px, #75787a 28px
+    );
+    border-bottom: 8px solid var(--black);
+    transform-origin: top;
+    animation: rollUp 1.4s cubic-bezier(.6,0,.3,1) 0.3s forwards;
   }
 
-  header p {
-    color: #cfc9b0;
-    margin-top: 6px;
+  @keyframes rollUp {
+    to { transform: scaleY(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .shutter { animation: none; display: none; }
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 24px;
+  }
+
+  .logo-img {
+    display: block;
+    max-width: 340px;
+    width: 80%;
+    height: auto;
+    margin: 0 auto;
+    border-radius: 10px;
   }
 
   h2 {
-    border-bottom: 2px solid #ccc;
+    border-bottom: 2px solid var(--black);
     padding-bottom: 8px;
     margin-top: 40px;
+    color: var(--black);
   }
 
   .car-grid {
@@ -100,7 +138,7 @@
   .price {
     font-size: 1.4rem;
     font-weight: bold;
-    color: #b4502c;
+    color: #a03327;
     margin: 4px 0 10px 0;
   }
 
@@ -225,7 +263,7 @@
 
   .midnight-note {
     font-size: 0.78rem;
-    color: #b4502c;
+    color: #a03327;
     margin-top: 6px;
     font-style: italic;
   }
@@ -275,7 +313,7 @@
   .modal-total {
     font-size: 2rem;
     font-weight: bold;
-    color: #b4502c;
+    color: #a03327;
     text-align: center;
     margin-bottom: 6px;
   }
@@ -294,7 +332,7 @@
   }
 
   .btn-submit {
-    background: #2b3a2c;
+    background: #1c1a17;
     color: white;
     border: none;
     border-radius: 4px;
@@ -313,10 +351,12 @@
 </head>
 <body>
 
-<header>
-  <h1>Paleto Repairs Used Cars</h1>
-  <p>Blaine County's used car lot</p>
-</header>
+<section class="hero">
+  <div class="shutter" aria-hidden="true"></div>
+  <div class="hero-content">
+    <img src="https://i.postimg.cc/C1MC2BTt/Vn9l2.jpg" alt="Paleto Repairs" class="logo-img">
+  </div>
+</section>
 
 <h2>Cars For Sale</h2>
 <div id="car-list" class="car-grid">
@@ -517,7 +557,7 @@
 
     if (!carValue) {
       errorEl.textContent = "Enter the car's value as new first.";
-      errorEl.style.color = "#b4502c";
+      errorEl.style.color = "#a03327";
       return;
     }
     errorEl.textContent = "";
@@ -588,7 +628,7 @@
 
     if (!name || !phone) {
       statusEl.textContent = "Name and phone number are required.";
-      statusEl.style.color = "#b4502c";
+      statusEl.style.color = "#a03327";
       return;
     }
 
@@ -629,7 +669,7 @@
       }, 1500);
     }).catch((err) => {
       statusEl.textContent = "Something went wrong submitting. Try again.";
-      statusEl.style.color = "#b4502c";
+      statusEl.style.color = "#a03327";
       console.error(err);
     });
   };
